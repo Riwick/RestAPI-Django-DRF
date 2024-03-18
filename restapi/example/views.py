@@ -6,6 +6,7 @@ from rest_framework.viewsets import ModelViewSet
 from rest_framework.permissions import *
 
 from example.models import ExampleModel, Category
+from example.permissions import IsAuthorOrReadOnly, IsAdminOrStaffOrReadOnly, IsUserOrReadOnly
 from example.serializers import ExampleSerializer, CategorySerializer, UserSerializer
 
 DEFAULT_PAGE_SIZE = 10
@@ -22,7 +23,7 @@ class ExampleView(ModelViewSet):
     serializer_class = ExampleSerializer
 
     pagination_class = Paginator
-    permission_classes = []
+    permission_classes = [IsAuthorOrReadOnly]
 
     filter_backends = [DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
     filterset_fields = ['category_id', 'author_id', 'price']
@@ -35,12 +36,11 @@ class CategoryView(ModelViewSet):
     serializer_class = CategorySerializer
 
     pagination_class = Paginator
-    permission_classes = []
+    permission_classes = [IsAdminOrStaffOrReadOnly]
 
-    filter_backends = [DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
-    filterset_fields = ['category_id', 'author_id', 'price']
-    search_fields = ['title', 'age']
-    ordering_fields = ['id', 'title', 'price', 'age']
+    filter_backends = [filters.SearchFilter, filters.OrderingFilter]
+    search_fields = ['id', 'title']
+    ordering_fields = ['id', 'title']
 
 
 class UserView(ModelViewSet):
@@ -48,10 +48,9 @@ class UserView(ModelViewSet):
     serializer_class = UserSerializer
 
     pagination_class = Paginator
-    permission_classes = []
+    permission_classes = [IsUserOrReadOnly, IsAuthenticatedOrReadOnly]
 
-    filter_backends = [DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
-    filterset_fields = ['category_id', 'author_id', 'price']
-    search_fields = ['title', 'age']
-    ordering_fields = ['id', 'title', 'price', 'age']
+    filter_backends = [filters.SearchFilter, filters.OrderingFilter]
+    search_fields = ['id', 'username']
+    ordering_fields = ['id', 'date_joined']
 
