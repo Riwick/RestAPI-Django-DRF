@@ -2,6 +2,7 @@ from django.contrib.auth.models import User
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import filters
 from rest_framework.pagination import PageNumberPagination
+from rest_framework.throttling import AnonRateThrottle, UserRateThrottle
 from rest_framework.viewsets import ModelViewSet
 from rest_framework.permissions import *
 
@@ -22,11 +23,13 @@ class BaseView(ModelViewSet):
 
     pagination_class = Paginator
     filter_backends = [filters.SearchFilter, filters.OrderingFilter]
+    throttle_classes = [AnonRateThrottle, UserRateThrottle]
 
 
 class ExampleView(BaseView):
     queryset = ExampleModel.objects.all().select_related('category_id').prefetch_related('author_id')
     serializer_class = ExampleSerializer
+    lookup_url_kwarg = 'example_id'
 
     permission_classes = [IsAuthorOrReadOnly]
 
@@ -39,6 +42,7 @@ class ExampleView(BaseView):
 class CategoryView(BaseView):
     queryset = Category.objects.all()
     serializer_class = CategorySerializer
+    lookup_url_kwarg = 'category_id'
 
     permission_classes = [IsAdminOrStaffOrReadOnly]
 
@@ -49,6 +53,7 @@ class CategoryView(BaseView):
 class UserView(BaseView):
     queryset = User.objects.all().prefetch_related('groups', 'user_permissions')
     serializer_class = UserSerializer
+    lookup_url_kwarg = 'user_id'
 
     permission_classes = [IsUserOrReadOnly, IsAuthenticatedOrReadOnly]
 
