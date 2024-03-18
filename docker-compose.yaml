@@ -1,0 +1,9 @@
+version: "3.7"
+services:
+  db:
+    image: postgres:16.1-alpine
+    container_name: DB
+    env_file:
+      - restapi/.env
+    ports:
+      - "8002:5432"
