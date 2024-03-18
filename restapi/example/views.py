@@ -18,11 +18,16 @@ class Paginator(PageNumberPagination):
     display_page_controls = True
 
 
-class ExampleView(ModelViewSet):
-    queryset = ExampleModel.objects.all().select_related('category_id')
-    serializer_class = ExampleSerializer
+class BaseView(ModelViewSet):
 
     pagination_class = Paginator
+    filter_backends = [filters.SearchFilter, filters.OrderingFilter]
+
+
+class ExampleView(BaseView):
+    queryset = ExampleModel.objects.all().select_related('category_id').prefetch_related('author_id')
+    serializer_class = ExampleSerializer
+
     permission_classes = [IsAuthorOrReadOnly]
 
     filter_backends = [DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
@@ -31,26 +36,22 @@ class ExampleView(ModelViewSet):
     ordering_fields = ['id', 'title', 'price', 'age']
 
 
-class CategoryView(ModelViewSet):
+class CategoryView(BaseView):
     queryset = Category.objects.all()
     serializer_class = CategorySerializer
 
-    pagination_class = Paginator
     permission_classes = [IsAdminOrStaffOrReadOnly]
 
-    filter_backends = [filters.SearchFilter, filters.OrderingFilter]
     search_fields = ['id', 'title']
     ordering_fields = ['id', 'title']
 
 
-class UserView(ModelViewSet):
+class UserView(BaseView):
     queryset = User.objects.all().prefetch_related('groups', 'user_permissions')
     serializer_class = UserSerializer
 
-    pagination_class = Paginator
     permission_classes = [IsUserOrReadOnly, IsAuthenticatedOrReadOnly]
 
-    filter_backends = [filters.SearchFilter, filters.OrderingFilter]
     search_fields = ['id', 'username']
     ordering_fields = ['id', 'date_joined']
 
