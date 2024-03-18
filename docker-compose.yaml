@@ -1,10 +1,26 @@
 version: "3.7"
 services:
+
+  app:
+    build:
+      context: .
+    command: sh -c "python manage.py runserver 0.0.0.0:8000"
+    container_name: restapi-app
+    env_file:
+      - restapi/.env-docker
+    volumes:
+      - ./restapi:/restapi
+    ports:
+      - "8000:8000"
+    depends_on:
+      - db
+      - redis
+
   db:
     image: postgres:16.1-alpine
     container_name: restapi-DB
     env_file:
-      - restapi/.env
+      - restapi/.env-docker
     ports:
       - "8002:5432"
 
@@ -12,7 +28,5 @@ services:
     image: redis:7.2.4-alpine
     container_name: restapi-redis
     hostname: redis
-    ports:
-      - "6379:6379"
     depends_on:
       - db
