@@ -5,9 +5,9 @@ from example.views import ExampleView, CategoryView, UserView
 
 router = SimpleRouter()
 
-router.register('examples', ExampleView)
-router.register('categories', CategoryView)
-router.register('users', UserView)
+router.register('examples', ExampleView, basename='examples')
+router.register('categories', CategoryView, basename='categories')
+router.register('users', UserView, basename='users')
 
 urlpatterns = [
     path('', include(router.urls))

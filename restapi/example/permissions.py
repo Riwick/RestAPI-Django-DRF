@@ -19,7 +19,6 @@ class IsAdminOrStaffOrReadOnly(BasePermission):
 
     def has_object_permission(self, request, view, obj):
         return bool(request.method in SAFE_METHODS or
-                    obj.author_id == request.user.id or
                     request.user.is_staff or
                     request.user.is_superuser)
 
